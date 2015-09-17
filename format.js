@@ -22,10 +22,10 @@ Format.prototype.normalizeChunks = function () {
         var chunkValue = this.data.assetsByChunkName[chunk];
 
         if (typeof chunkValue === 'string') {
-            output[chunk] = chunkValue;
+            output[chunk] = [chunkValue];
         }
         else {
-            output[chunk] = chunkValue.slice(-1)[0];
+            output[chunk] = chunkValue;
         }
     }
 
@@ -42,14 +42,25 @@ Format.prototype.mergeChunksIntoAssets = function () {
     var assetsByChunkName = this.normalizeChunks();
 
     output.assets = this.assets;
-
     for (var chunk in assetsByChunkName) {
-        var fileExtension = assetsByChunkName[chunk].split('.').slice(-1)[0];
-        var chunkWithExtension = chunk + '.' + fileExtension;
+        var chunkValue = assetsByChunkName[chunk];
 
-        output.assets[chunkWithExtension] = assetsByChunkName[chunk];
+        if (typeof chunkValue === 'string') {
+            var fileExtension = chunkValue.split('.').slice(-1)[0];
+            var chunkWithExtension = chunk + '.' + fileExtension;
+
+            output.assets[chunkWithExtension] = [chunkValue];
+
+        }
+        else {
+            var fileExtension = chunkValue[0].split('.').slice(-1)[0];
+            var chunkWithExtension = chunk + '.' + fileExtension;
+
+            output.assets[chunkWithExtension] = chunkValue;
+        }
+
     }
-
+    console.log(output)
     return output;
 };
 
